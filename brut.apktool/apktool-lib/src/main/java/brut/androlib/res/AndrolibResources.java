@@ -37,6 +37,8 @@ import org.apache.commons.io.IOUtils;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
@@ -331,6 +333,8 @@ final public class AndrolibResources {
 
         if (resDir != null) {
             File buildDir = new File(resDir.getParent(), "build");
+            //noinspection ResultOfMethodCallIgnored
+            buildDir.mkdirs();
             resourcesZip = new File(buildDir, "resources.zip");
         }
 
@@ -344,9 +348,6 @@ final public class AndrolibResources {
 
             // Treats error that used to be valid in aapt1 as warnings in aapt2
             cmd.add("--legacy");
-
-            File buildDir = new File(resDir.getParent(), "build");
-            resourcesZip = new File(buildDir, "resources.zip");
 
             cmd.add("-o");
             cmd.add(resourcesZip.getAbsolutePath());
@@ -606,11 +607,11 @@ final public class AndrolibResources {
             throws AndrolibException {
 
         String aaptPath = buildOptions.aaptPath;
-        boolean customAapt = !aaptPath.isEmpty();
+        boolean customAapt = false; // ReVanced - we always use a custom aapt binary.
         List<String> cmd = new ArrayList<>();
 
         try {
-            String aaptCommand = AaptManager.getAaptExecutionCommand(aaptPath, getAaptBinaryFile());
+            String aaptCommand = AaptManager.getAaptExecutionCommand(aaptPath, getAaptVersion());
             cmd.add(aaptCommand);
         } catch (BrutException ex) {
             LOGGER.warning("aapt: " + ex.getMessage() + " (defaulting to $PATH binary)");
@@ -803,7 +804,7 @@ final public class AndrolibResources {
 
         if (id == 1) {
             try (InputStream in = getAndroidFrameworkResourcesAsStream();
-                 OutputStream out = new FileOutputStream(apk)) {
+                 OutputStream out = Files.newOutputStream(apk.toPath())) {
                 IOUtils.copy(in, out);
                 return apk;
             } catch (IOException ex) {
@@ -881,10 +882,10 @@ final public class AndrolibResources {
                     + (tag == null ? "" : '-' + tag)
                     + ".apk");
 
-            out = new ZipOutputStream(new FileOutputStream(outFile));
+            out = new ZipOutputStream(Files.newOutputStream(outFile.toPath()));
             out.setMethod(ZipOutputStream.STORED);
             CRC32 crc = new CRC32();
-            crc.update(data);
+            crc.update(data, 0, data.length);
             entry = new ZipEntry("resources.arsc");
             entry.setSize(data.length);
             entry.setMethod(ZipOutputStream.STORED);
@@ -899,7 +900,7 @@ final public class AndrolibResources {
                 in = zip.getInputStream(entry);
                 byte[] manifest = IOUtils.toByteArray(in);
                 CRC32 manifestCrc = new CRC32();
-                manifestCrc.update(manifest);
+                manifestCrc.update(manifest, 0, manifest.length);
                 entry.setSize(manifest.length);
                 entry.setCompressedSize(-1);
                 entry.setCrc(manifestCrc.getValue());
@@ -921,8 +922,10 @@ final public class AndrolibResources {
     public void publicizeResources(File arscFile) throws AndrolibException {
         byte[] data = new byte[(int) arscFile.length()];
 
-        try(InputStream in = new FileInputStream(arscFile);
-            OutputStream out = new FileOutputStream(arscFile)) {
+        Path path = arscFile.toPath();
+        try(InputStream in = Files.newInputStream(path);
+            OutputStream out = Files.newOutputStream(path)) {
+            //noinspection ResultOfMethodCallIgnored
             in.read(data);
             publicizeResources(data);
             out.write(data);
@@ -1007,17 +1010,6 @@ final public class AndrolibResources {
 
         mFrameworkDirectory = dir;
         return dir;
-    }
-
-    private File getAaptBinaryFile() throws AndrolibException {
-        try {
-            if (getAaptVersion() == 2) {
-                return AaptManager.getAapt2();
-            }
-            return AaptManager.getAapt1();
-        } catch (BrutException ex) {
-            throw new AndrolibException(ex);
-        }
     }
 
     private int getAaptVersion() {

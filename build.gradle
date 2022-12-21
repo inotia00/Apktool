@@ -44,7 +44,7 @@ buildscript {
 
 apply from: 'gradle/functions.gradle'
 
-version = '2.7.1'
+version = '2.9.0'
 def suffix = 'SNAPSHOT'
 
 defaultTasks 'build', 'shadowJar', 'proguard'
@@ -223,7 +223,6 @@ subprojects {
         }
 
         java {
-            withJavadocJar()
             withSourcesJar()
         }
 

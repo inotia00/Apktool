@@ -23,19 +23,11 @@ import java.util.List;
 
 public class AaptManager {
 
-    public static File getAapt2() throws BrutException {
-        return getAapt(2);
-    }
-
-    public static File getAapt1() throws BrutException {
-        return getAapt(1);
-    }
-
     private static File getAapt(Integer version) throws BrutException {
         File aaptBinary;
         String aaptVersion = getAaptBinaryName(version);
 
-        if (! OSDetection.is64Bit() && OSDetection.isMacOSX()) {
+        if (!OSDetection.is64Bit() && OSDetection.isMacOSX()) {
             throw new BrutException("32 bit OS detected. No 32 bit binaries available.");
         }
 
@@ -63,17 +55,20 @@ public class AaptManager {
         throw new BrutException("Can't set aapt binary as executable");
     }
 
-    public static String getAaptExecutionCommand(String aaptPath, File aapt) throws BrutException {
-        if (! aaptPath.isEmpty()) {
+    public static String getAaptExecutionCommand(String aaptPath, int aaptVersion) throws BrutException {
+        if (aaptPath != null && !aaptPath.isEmpty()) {
             File aaptFile = new File(aaptPath);
             if (aaptFile.canRead() && aaptFile.exists()) {
-                aaptFile.setExecutable(true);
+                executable(aaptFile);
                 return aaptFile.getPath();
             } else {
                 throw new BrutException("binary could not be read: " + aaptFile.getAbsolutePath());
             }
         } else {
-            return aapt.getAbsolutePath();
+            if (aaptVersion == 2) {
+                return getAapt2().getAbsolutePath();
+            }
+            return getAapt1().getAbsolutePath();
         }
     }
 
@@ -101,7 +96,7 @@ public class AaptManager {
         if (!aapt.isFile()) {
             throw new BrutException("Could not identify aapt binary as executable.");
         }
-        aapt.setExecutable(true);
+        executable(aapt);
 
         List<String> cmd = new ArrayList<>();
         cmd.add(aapt.getAbsolutePath());
@@ -114,5 +109,21 @@ public class AaptManager {
         }
 
         return getAppVersionFromString(version);
+    }
+
+    private static void executable(File aapt) {
+        if (!aapt.canExecute()) {
+            try {
+                aapt.setExecutable(true);
+            } catch (Exception ignored) {}
+        }
+    }
+
+    public static File getAapt2() throws BrutException {
+        return getAapt(2);
+    }
+
+    public static File getAapt1() throws BrutException {
+        return getAapt(1);
     }
 }
