@@ -100,7 +100,7 @@ public class InvalidSdkBoundingTest extends BaseTest {
         AndrolibResources androlibResources = new AndrolibResources();
 
         Map<String, String> sdkInfo = new LinkedHashMap<>();
-        sdkInfo.put("targetSdkVersion", "T");
+        sdkInfo.put("targetSdkVersion", "U");
 
         androlibResources.setSdkInfo(sdkInfo);
         assertEquals("10000", androlibResources.checkTargetSdkVersionBounds());
