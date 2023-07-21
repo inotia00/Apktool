@@ -18,6 +18,9 @@ package brut.androlib.res.data;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -27,6 +30,10 @@ import brut.androlib.AndrolibException;
 import brut.androlib.err.UndefinedResObjectException;
 
 public class ResResSpec {
+    private static final Set<String> EMPTY_RESOURCE_NAMES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+        "0_resource_name_obfuscated",
+        "(name removed)"
+    )));
     private final ResID mId;
     private final String mName;
     private final ResPackage mPackage;
@@ -37,7 +44,7 @@ public class ResResSpec {
         this.mId = id;
         String cleanName;
 
-        name = (("(name removed)".equals(name)) ? null : name);
+        name = EMPTY_RESOURCE_NAMES.contains(name) ? null : name;
 
         ResResSpec resResSpec = type.getResSpecUnsafe(name);
         if (resResSpec != null) {
