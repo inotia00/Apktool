@@ -16,7 +16,10 @@
  */
 package brut.util;
 
-import java.io.*;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ExtDataInput extends DataInputDelegate {
     public ExtDataInput(InputStream in) {
@@ -29,7 +32,7 @@ public class ExtDataInput extends DataInputDelegate {
 
     public int[] readIntArray(int length) throws IOException {
         int[] array = new int[length];
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             array[i] = readInt();
         }
         return array;
@@ -59,7 +62,7 @@ public class ExtDataInput extends DataInputDelegate {
         byte got = readByte();
         if (got != expected) {
             throw new IOException(String.format(
-                    "Expected: 0x%08x, got: 0x%08x", expected, got));
+                "Expected: 0x%08x, got: 0x%08x", expected, got));
         }
     }
 
@@ -90,9 +93,9 @@ public class ExtDataInput extends DataInputDelegate {
     }
 
     public String readNullEndedString(int length, boolean fixed)
-            throws IOException {
+        throws IOException {
         StringBuilder string = new StringBuilder(16);
-        while(length-- != 0) {
+        while (length-- != 0) {
             short ch = readShort();
             if (ch == 0) {
                 break;

@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.URI;
 
 public class ExtFile extends File {
+    private Directory mDirectory;
+
     public ExtFile(File file) {
         super(file.getPath());
     }
@@ -57,6 +59,4 @@ public class ExtFile extends File {
             mDirectory.close();
         }
     }
-
-    private Directory mDirectory;
 }

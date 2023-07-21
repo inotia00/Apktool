@@ -16,20 +16,21 @@
  */
 package brut.androlib.decode;
 
-import brut.androlib.ApkDecoder;
-import brut.androlib.BaseTest;
-import brut.androlib.TestUtils;
-import brut.common.BrutException;
-import brut.directory.ExtFile;
-import brut.util.OS;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import brut.androlib.ApkDecoder;
+import brut.androlib.BaseTest;
+import brut.androlib.TestUtils;
+import brut.common.BrutException;
+import brut.directory.ExtFile;
+import brut.util.OS;
 
 public class OutsideOfDirectoryEntryTest extends BaseTest {
 

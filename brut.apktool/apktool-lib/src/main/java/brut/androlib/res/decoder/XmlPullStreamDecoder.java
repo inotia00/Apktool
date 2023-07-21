@@ -16,11 +16,6 @@
  */
 package brut.androlib.res.decoder;
 
-import brut.androlib.AndrolibException;
-import brut.androlib.err.AXmlDecodingException;
-import brut.androlib.err.RawXmlEncounteredException;
-import brut.androlib.res.data.ResTable;
-import brut.androlib.res.util.ExtXmlSerializer;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.wrapper.XmlPullParserWrapper;
@@ -32,7 +27,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import brut.androlib.AndrolibException;
+import brut.androlib.err.AXmlDecodingException;
+import brut.androlib.err.RawXmlEncounteredException;
+import brut.androlib.res.data.ResTable;
+import brut.androlib.res.util.ExtXmlSerializer;
+
 public class XmlPullStreamDecoder implements ResStreamDecoder {
+    private final XmlPullParser mParser;
+    private final ExtXmlSerializer mSerial;
+
     public XmlPullStreamDecoder(XmlPullParser parser,
                                 ExtXmlSerializer serializer) {
         this.mParser = parser;
@@ -41,7 +45,7 @@ public class XmlPullStreamDecoder implements ResStreamDecoder {
 
     @Override
     public void decode(InputStream in, OutputStream out)
-            throws AndrolibException {
+        throws AndrolibException {
         try {
             XmlPullWrapperFactory factory = XmlPullWrapperFactory.newInstance();
             XmlPullParserWrapper par = factory.newPullParserWrapper(mParser);
@@ -53,27 +57,29 @@ public class XmlPullStreamDecoder implements ResStreamDecoder {
 
                 @Override
                 public void event(XmlPullParser pp)
-                        throws XmlPullParserException, IOException {
+                    throws XmlPullParserException, IOException {
                     int type = pp.getEventType();
 
                     if (type == XmlPullParser.START_TAG) {
                         if ("manifest".equalsIgnoreCase(pp.getName())) {
                             try {
                                 hidePackageInfo = parseManifest(pp);
-                            } catch (AndrolibException ignored) {}
+                            } catch (AndrolibException ignored) {
+                            }
                         } else if ("uses-sdk".equalsIgnoreCase(pp.getName())) {
                             try {
                                 hideSdkInfo = parseAttr(pp);
                                 if (hideSdkInfo) {
                                     return;
                                 }
-                            } catch (AndrolibException ignored) {}
+                            } catch (AndrolibException ignored) {
+                            }
                         }
                     } else if (hideSdkInfo && type == XmlPullParser.END_TAG
-                            && "uses-sdk".equalsIgnoreCase(pp.getName())) {
+                        && "uses-sdk".equalsIgnoreCase(pp.getName())) {
                         return;
                     } else if (hidePackageInfo && type == XmlPullParser.END_TAG
-                            && "manifest".equalsIgnoreCase(pp.getName())) {
+                        && "manifest".equalsIgnoreCase(pp.getName())) {
                         super.event(pp);
                         return;
                     }
@@ -81,7 +87,7 @@ public class XmlPullStreamDecoder implements ResStreamDecoder {
                 }
 
                 private boolean parseManifest(XmlPullParser pp)
-                        throws AndrolibException {
+                    throws AndrolibException {
                     String attr_name;
 
                     // read <manifest> for package:
@@ -100,7 +106,7 @@ public class XmlPullStreamDecoder implements ResStreamDecoder {
                 }
 
                 private boolean parseAttr(XmlPullParser pp)
-                        throws AndrolibException {
+                    throws AndrolibException {
                     for (int i = 0; i < pp.getAttributeCount(); i++) {
                         final String a_ns = "http://schemas.android.com/apk/res/android";
                         String ns = pp.getAttributeNamespace(i);
@@ -110,9 +116,9 @@ public class XmlPullStreamDecoder implements ResStreamDecoder {
                             String value = pp.getAttributeValue(i);
                             if (name != null && value != null) {
                                 if (name.equalsIgnoreCase("minSdkVersion")
-                                        || name.equalsIgnoreCase("targetSdkVersion")
-                                        || name.equalsIgnoreCase("maxSdkVersion")
-                                        || name.equalsIgnoreCase("compileSdkVersion")) {
+                                    || name.equalsIgnoreCase("targetSdkVersion")
+                                    || name.equalsIgnoreCase("maxSdkVersion")
+                                    || name.equalsIgnoreCase("compileSdkVersion")) {
                                     resTable.addSdkInfo(name, value);
                                 } else {
                                     resTable.clearSdkInfo();
@@ -128,7 +134,7 @@ public class XmlPullStreamDecoder implements ResStreamDecoder {
                         }
                     }
 
-                    return ! resTable.getAnalysisMode();
+                    return !resTable.getAnalysisMode();
                 }
             };
 
@@ -147,10 +153,7 @@ public class XmlPullStreamDecoder implements ResStreamDecoder {
     }
 
     public void decodeManifest(InputStream in, OutputStream out)
-            throws AndrolibException {
-            decode(in, out);
+        throws AndrolibException {
+        decode(in, out);
     }
-
-    private final XmlPullParser mParser;
-    private final ExtXmlSerializer mSerial;
 }

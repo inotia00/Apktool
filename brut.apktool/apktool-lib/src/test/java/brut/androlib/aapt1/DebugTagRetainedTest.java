@@ -16,11 +16,9 @@
  */
 package brut.androlib.aapt1;
 
-import brut.androlib.*;
-import brut.androlib.options.BuildOptions;
-import brut.directory.ExtFile;
-import brut.common.BrutException;
-import brut.util.OS;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import static org.junit.Assert.assertTrue;
+
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -32,8 +30,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertTrue;
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+import brut.androlib.Androlib;
+import brut.androlib.ApkDecoder;
+import brut.androlib.BaseTest;
+import brut.androlib.TestUtils;
+import brut.androlib.options.BuildOptions;
+import brut.common.BrutException;
+import brut.directory.ExtFile;
+import brut.util.OS;
 
 public class DebugTagRetainedTest extends BaseTest {
 
@@ -74,9 +78,9 @@ public class DebugTagRetainedTest extends BaseTest {
         String apk = "issue1235-new";
 
         String expected = TestUtils.replaceNewlines("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"no\"?>" +
-                "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" android:compileSdkVersion=\"23\" " +
-                "android:compileSdkVersionCodename=\"6.0-2438415\" package=\"com.ibotpeaches.issue1235\" platformBuildVersionCode=\"20\" " +
-                "platformBuildVersionName=\"4.4W.2-1537038\">    <application android:debuggable=\"true\"/></manifest>");
+            "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" android:compileSdkVersion=\"23\" " +
+            "android:compileSdkVersionCodename=\"6.0-2438415\" package=\"com.ibotpeaches.issue1235\" platformBuildVersionCode=\"20\" " +
+            "platformBuildVersionName=\"4.4W.2-1537038\">    <application android:debuggable=\"true\"/></manifest>");
 
         byte[] encoded = Files.readAllBytes(Paths.get(sTmpDir + File.separator + apk + File.separator + "AndroidManifest.xml"));
         String obtained = TestUtils.replaceNewlines(new String(encoded));

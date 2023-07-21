@@ -16,16 +16,21 @@
  */
 package brut.directory;
 
-import brut.common.BrutException;
-import brut.util.BrutIO;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import brut.common.BrutException;
+import brut.util.BrutIO;
 
 public class ZipUtils {
 
@@ -36,7 +41,7 @@ public class ZipUtils {
     }
 
     public static void zipFolders(final File folder, final File zip, final File assets, final Collection<String> doNotCompress)
-            throws BrutException, IOException {
+        throws BrutException, IOException {
 
         mDoNotCompress = doNotCompress;
         ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zip));
@@ -50,12 +55,12 @@ public class ZipUtils {
     }
 
     private static void zipFolders(final File folder, final ZipOutputStream outputStream)
-            throws BrutException, IOException {
+        throws BrutException, IOException {
         processFolder(folder, outputStream, folder.getPath().length() + 1);
     }
 
     private static void processFolder(final File folder, final ZipOutputStream zipOutputStream, final int prefixLength)
-            throws BrutException, IOException {
+        throws BrutException, IOException {
         for (final File file : folder.listFiles()) {
             if (file.isFile()) {
                 final String cleanedPath = BrutIO.sanitizeUnknownFile(folder, file.getPath().substring(prefixLength));

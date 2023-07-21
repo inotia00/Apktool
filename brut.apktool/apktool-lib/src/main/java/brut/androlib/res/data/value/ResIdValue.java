@@ -16,11 +16,12 @@
  */
 package brut.androlib.res.data.value;
 
-import brut.androlib.res.data.ResResource;
-import brut.androlib.res.xml.ResValuesXmlSerializable;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
+
+import brut.androlib.res.data.ResResource;
+import brut.androlib.res.xml.ResValuesXmlSerializable;
 
 public class ResIdValue extends ResValue implements ResValuesXmlSerializable {
     @Override

@@ -34,8 +34,8 @@ public class ResValuesFile {
 
     public String getPath() {
         return "values" + mConfig.getFlags().getQualifiers() + "/"
-                + mType.getName() + (mType.getName().endsWith("s") ? "" : "s")
-                + ".xml";
+            + mType.getName() + (mType.getName().endsWith("s") ? "" : "s")
+            + ".xml";
     }
 
     public Set<ResResource> listResources() {

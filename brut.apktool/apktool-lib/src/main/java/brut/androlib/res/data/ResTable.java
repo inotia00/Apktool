@@ -16,12 +16,17 @@
  */
 package brut.androlib.res.data;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import brut.androlib.AndrolibException;
 import brut.androlib.err.UndefinedResObjectException;
 import brut.androlib.meta.VersionInfo;
 import brut.androlib.res.AndrolibResources;
 import brut.androlib.res.data.value.ResValue;
-import java.util.*;
 
 public class ResTable {
     private final AndrolibResources mAndRes;
@@ -30,16 +35,14 @@ public class ResTable {
     private final Map<String, ResPackage> mPackagesByName = new HashMap<>();
     private final Set<ResPackage> mMainPackages = new LinkedHashSet<>();
     private final Set<ResPackage> mFramePackages = new LinkedHashSet<>();
-
+    private final Map<String, String> mSdkInfo = new LinkedHashMap<>();
+    private final VersionInfo mVersionInfo = new VersionInfo();
     private String mPackageRenamed;
     private String mPackageOriginal;
     private int mPackageId;
     private boolean mAnalysisMode = false;
     private boolean mSharedLibrary = false;
     private boolean mSparseResources = false;
-
-    private final Map<String, String> mSdkInfo = new LinkedHashMap<>();
-    private final VersionInfo mVersionInfo = new VersionInfo();
 
     public ResTable() {
         mAndRes = null;
@@ -140,30 +143,6 @@ public class ResTable {
         }
     }
 
-    public void setAnalysisMode(boolean mode) {
-        mAnalysisMode = mode;
-    }
-
-    public void setPackageRenamed(String pkg) {
-        mPackageRenamed = pkg;
-    }
-
-    public void setPackageOriginal(String pkg) {
-        mPackageOriginal = pkg;
-    }
-
-    public void setPackageId(int id) {
-        mPackageId = id;
-    }
-
-    public void setSharedLibrary(boolean flag) {
-        mSharedLibrary = flag;
-    }
-
-    public void setSparseResources(boolean flag) {
-        mSparseResources = flag;
-    }
-
     public void clearSdkInfo() {
         mSdkInfo.clear();
     }
@@ -192,23 +171,47 @@ public class ResTable {
         return mAnalysisMode;
     }
 
+    public void setAnalysisMode(boolean mode) {
+        mAnalysisMode = mode;
+    }
+
     public String getPackageRenamed() {
         return mPackageRenamed;
+    }
+
+    public void setPackageRenamed(String pkg) {
+        mPackageRenamed = pkg;
     }
 
     public String getPackageOriginal() {
         return mPackageOriginal;
     }
 
+    public void setPackageOriginal(String pkg) {
+        mPackageOriginal = pkg;
+    }
+
     public int getPackageId() {
         return mPackageId;
+    }
+
+    public void setPackageId(int id) {
+        mPackageId = id;
     }
 
     public boolean getSharedLibrary() {
         return mSharedLibrary;
     }
 
+    public void setSharedLibrary(boolean flag) {
+        mSharedLibrary = flag;
+    }
+
     public boolean getSparseResources() {
         return mSparseResources;
+    }
+
+    public void setSparseResources(boolean flag) {
+        mSparseResources = flag;
     }
 }

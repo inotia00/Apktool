@@ -22,11 +22,11 @@ import java.io.IOException;
 
 public interface ExtXmlSerializer extends XmlSerializer {
 
-    ExtXmlSerializer newLine() throws IOException;
-
-    void setDisabledAttrEscape(boolean disabled);
-
     String PROPERTY_SERIALIZER_INDENTATION = "http://xmlpull.org/v1/doc/properties.html#serializer-indentation";
     String PROPERTY_SERIALIZER_LINE_SEPARATOR = "http://xmlpull.org/v1/doc/properties.html#serializer-line-separator";
     String PROPERTY_DEFAULT_ENCODING = "DEFAULT_ENCODING";
+
+    ExtXmlSerializer newLine() throws IOException;
+
+    void setDisabledAttrEscape(boolean disabled);
 }

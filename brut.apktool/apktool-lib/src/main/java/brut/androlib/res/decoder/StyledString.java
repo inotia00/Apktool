@@ -16,7 +16,6 @@
  */
 package brut.androlib.res.decoder;
 
-import brut.androlib.res.xml.ResXmlEncoders;
 import com.google.common.base.Splitter;
 import com.google.common.base.Splitter.MapSplitter;
 import com.google.common.collect.Iterators;
@@ -26,7 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import brut.androlib.res.xml.ResXmlEncoders;
+
 public class StyledString {
+    private static final Logger LOGGER = Logger.getLogger(StyledString.class.getName());
     private final String mText;
     private final List<Span> mSpans;
 
@@ -141,7 +143,7 @@ public class StyledString {
             if (attributes != null) {
                 for (Map.Entry<String, String> attrEntry : attributes.entrySet()) {
                     xmlValue.append(' ').append(attrEntry.getKey()).append("=\"")
-                            .append(ResXmlEncoders.escapeXmlChars(attrEntry.getValue())).append('"');
+                        .append(ResXmlEncoders.escapeXmlChars(attrEntry.getValue())).append('"');
                 }
             }
             // if an opening tag is followed by a matching closing tag, write as an empty-element tag
@@ -166,6 +168,4 @@ public class StyledString {
             xmlValue.append("</").append(name).append('>');
         }
     }
-
-    private static final Logger LOGGER = Logger.getLogger(StyledString.class.getName());
 }

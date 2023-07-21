@@ -16,17 +16,20 @@
  */
 package brut.androlib.aapt1;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
 import brut.androlib.Androlib;
 import brut.androlib.ApkDecoder;
 import brut.androlib.BaseTest;
 import brut.androlib.TestUtils;
-import brut.directory.ExtFile;
 import brut.common.BrutException;
+import brut.directory.ExtFile;
 import brut.util.OS;
-import java.io.File;
-import java.io.IOException;
-
-import org.junit.*;
 
 public class LargeIntsInManifestTest extends BaseTest {
 

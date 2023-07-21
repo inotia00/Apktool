@@ -23,9 +23,12 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 public class ExtMXSerializer extends MXSerializer implements ExtXmlSerializer {
+    private String mDefaultEncoding;
+    private boolean mIsDisabledAttrEscape = false;
+
     @Override
     public void startDocument(String encoding, Boolean standalone)
-            throws IOException, IllegalArgumentException, IllegalStateException {
+        throws IOException, IllegalArgumentException, IllegalStateException {
         super.startDocument(encoding != null ? encoding : mDefaultEncoding, standalone);
         this.newLine();
     }
@@ -71,8 +74,5 @@ public class ExtMXSerializer extends MXSerializer implements ExtXmlSerializer {
     public void setDisabledAttrEscape(boolean disabled) {
         mIsDisabledAttrEscape = disabled;
     }
-
-    private String mDefaultEncoding;
-    private boolean mIsDisabledAttrEscape = false;
 
 }

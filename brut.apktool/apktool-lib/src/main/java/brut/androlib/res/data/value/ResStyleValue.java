@@ -16,18 +16,22 @@
  */
 package brut.androlib.res.data.value;
 
-import brut.androlib.AndrolibException;
-import brut.androlib.res.data.ResResSpec;
-import brut.androlib.res.data.ResResource;
-import brut.androlib.res.xml.ResValuesXmlSerializable;
-import brut.util.Duo;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import brut.androlib.AndrolibException;
+import brut.androlib.res.data.ResResSpec;
+import brut.androlib.res.data.ResResource;
+import brut.androlib.res.xml.ResValuesXmlSerializable;
+import brut.util.Duo;
+
 public class ResStyleValue extends ResBagValue implements
-        ResValuesXmlSerializable {
+    ResValuesXmlSerializable {
+    private static final Logger LOGGER = Logger.getLogger(ResStyleValue.class.getName());
+    private final Duo<ResReferenceValue, ResScalarValue>[] mItems;
+
     ResStyleValue(ResReferenceValue parent,
                   Duo<Integer, ResScalarValue>[] items, ResValueFactory factory) {
         super(parent);
@@ -87,8 +91,4 @@ public class ResStyleValue extends ResBagValue implements
         }
         serializer.endTag(null, "style");
     }
-
-    private final Duo<ResReferenceValue, ResScalarValue>[] mItems;
-
-    private static final Logger LOGGER = Logger.getLogger(ResStyleValue.class.getName());
 }

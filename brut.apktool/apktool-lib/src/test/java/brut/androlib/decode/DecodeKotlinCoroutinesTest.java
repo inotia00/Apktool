@@ -16,11 +16,8 @@
  */
 package brut.androlib.decode;
 
-import brut.androlib.*;
-import brut.common.BrutException;
-import brut.directory.DirectoryException;
-import brut.directory.ExtFile;
-import brut.util.OS;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +27,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertTrue;
+import brut.androlib.Androlib;
+import brut.androlib.AndrolibException;
+import brut.androlib.ApkDecoder;
+import brut.androlib.BaseTest;
+import brut.androlib.TestUtils;
+import brut.common.BrutException;
+import brut.directory.DirectoryException;
+import brut.directory.ExtFile;
+import brut.util.OS;
 
 public class DecodeKotlinCoroutinesTest extends BaseTest {
     private static final String apk = "test-kotlin-coroutines.apk";

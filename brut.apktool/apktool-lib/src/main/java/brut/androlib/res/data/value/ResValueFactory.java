@@ -17,6 +17,7 @@
 package brut.androlib.res.data.value;
 
 import android.util.TypedValue;
+
 import brut.androlib.AndrolibException;
 import brut.androlib.res.data.ResPackage;
 import brut.androlib.res.data.ResTypeSpec;
@@ -95,19 +96,19 @@ public class ResValueFactory {
 
         // Android O Preview added an unknown enum for c. This is hardcoded as 0 for now.
         if (ResTypeSpec.RES_TYPE_NAME_ARRAY.equals(resTypeName)
-                || key == ResArrayValue.BAG_KEY_ARRAY_START || key == 0) {
+            || key == ResArrayValue.BAG_KEY_ARRAY_START || key == 0) {
             return new ResArrayValue(parentVal, items);
         }
 
         if (ResTypeSpec.RES_TYPE_NAME_PLURALS.equals(resTypeName) ||
-                (key >= ResPluralsValue.BAG_KEY_PLURALS_START && key <= ResPluralsValue.BAG_KEY_PLURALS_END)) {
+            (key >= ResPluralsValue.BAG_KEY_PLURALS_START && key <= ResPluralsValue.BAG_KEY_PLURALS_END)) {
             return new ResPluralsValue(parentVal, items);
         }
 
         if (ResTypeSpec.RES_TYPE_NAME_ATTR.equals(resTypeName)) {
             return new ResAttr(parentVal, 0, null, null, null);
         }
-        
+
         if (resTypeName.startsWith(ResTypeSpec.RES_TYPE_NAME_STYLES)) {
             return new ResStyleValue(parentVal, items, this);
         }

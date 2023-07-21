@@ -16,12 +16,9 @@
  */
 package brut.androlib.decode;
 
-import brut.androlib.ApkDecoder;
-import brut.androlib.BaseTest;
-import brut.androlib.TestUtils;
-import brut.common.BrutException;
-import brut.directory.ExtFile;
-import brut.util.OS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,8 +26,12 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import brut.androlib.ApkDecoder;
+import brut.androlib.BaseTest;
+import brut.androlib.TestUtils;
+import brut.common.BrutException;
+import brut.directory.ExtFile;
+import brut.util.OS;
 
 public class Empty9PatchTest extends BaseTest {
 
@@ -57,7 +58,7 @@ public class Empty9PatchTest extends BaseTest {
         apkDecoder.setOutDir(new File(sTmpDir + File.separator + apk + ".out"));
         apkDecoder.decode();
 
-        File aPng =  new File(sTestOrigDir,"res/drawable-xhdpi/empty.9.png");
+        File aPng = new File(sTestOrigDir, "res/drawable-xhdpi/empty.9.png");
         assertTrue(aPng.isFile());
         assertEquals(0, aPng.length());
     }

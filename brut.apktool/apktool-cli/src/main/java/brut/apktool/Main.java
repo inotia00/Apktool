@@ -16,7 +16,29 @@
  */
 package brut.apktool;
 
-import brut.androlib.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.ErrorManager;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import brut.androlib.Androlib;
+import brut.androlib.AndrolibException;
+import brut.androlib.ApkDecoder;
+import brut.androlib.ApktoolProperties;
 import brut.androlib.err.CantFindFrameworkResException;
 import brut.androlib.err.InFileNotFoundException;
 import brut.androlib.err.OutDirExistsException;
@@ -25,13 +47,30 @@ import brut.common.BrutException;
 import brut.directory.DirectoryException;
 import brut.util.AaptManager;
 import brut.util.OSDetection;
-import org.apache.commons.cli.*;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.*;
 
 public class Main {
+    private final static Options normalOptions;
+    private final static Options decodeOptions;
+    private final static Options buildOptions;
+    private final static Options frameOptions;
+    private final static Options allOptions;
+    private final static Options emptyOptions;
+    private final static Options emptyFrameworkOptions;
+    private final static Options listFrameworkOptions;
+    private static boolean advanceMode = false;
+
+    static {
+        //normal and advance usage output
+        normalOptions = new Options();
+        buildOptions = new Options();
+        decodeOptions = new Options();
+        frameOptions = new Options();
+        allOptions = new Options();
+        emptyOptions = new Options();
+        emptyFrameworkOptions = new Options();
+        listFrameworkOptions = new Options();
+    }
+
     public static void main(String[] args) throws BrutException {
 
         // headless
@@ -50,7 +89,7 @@ public class Main {
         try {
             commandLine = parser.parse(allOptions, args, false);
 
-            if (! OSDetection.is64Bit()) {
+            if (!OSDetection.is64Bit()) {
                 System.err.println("32 bit support is deprecated. Apktool will not support 32bit on v3.0.0.");
             }
         } catch (ParseException ex) {
@@ -161,7 +200,7 @@ public class Main {
             // make out folder manually using name of apk
             String outName = apkName;
             outName = outName.endsWith(".apk") ? outName.substring(0,
-                    outName.length() - 4).trim() : outName + ".out";
+                outName.length() - 4).trim() : outName + ".out";
 
             // make file from path
             outName = new File(outName).getName();
@@ -175,20 +214,20 @@ public class Main {
             decoder.decode();
         } catch (OutDirExistsException ex) {
             System.err
-                    .println("Destination directory ("
-                            + outDir.getAbsolutePath()
-                            + ") "
-                            + "already exists. Use -f switch if you want to overwrite it.");
+                .println("Destination directory ("
+                    + outDir.getAbsolutePath()
+                    + ") "
+                    + "already exists. Use -f switch if you want to overwrite it.");
             System.exit(1);
         } catch (InFileNotFoundException ex) {
             System.err.println("Input file (" + apkName + ") " + "was not found or was not readable.");
             System.exit(1);
         } catch (CantFindFrameworkResException ex) {
             System.err
-                    .println("Can't find framework resources for package of id: "
-                            + ex.getPkgId()
-                            + ". You must install proper "
-                            + "framework files, see project website for more info.");
+                .println("Can't find framework resources for package of id: "
+                    + ex.getPkgId()
+                    + ". You must install proper "
+                    + "framework files, see project website for more info.");
             System.exit(1);
         } catch (IOException ex) {
             System.err.println("Could not modify file. Please ensure you have permission.");
@@ -199,7 +238,8 @@ public class Main {
         } finally {
             try {
                 decoder.close();
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
     }
 
@@ -318,61 +358,61 @@ public class Main {
 
         // create options
         Option versionOption = Option.builder("version")
-                .longOpt("version")
-                .desc("prints the version then exits")
-                .build();
+            .longOpt("version")
+            .desc("prints the version then exits")
+            .build();
 
         Option advanceOption = Option.builder("advance")
-                .longOpt("advanced")
-                .desc("prints advance information.")
-                .build();
+            .longOpt("advanced")
+            .desc("prints advance information.")
+            .build();
 
         Option noSrcOption = Option.builder("s")
-                .longOpt("no-src")
-                .desc("Do not decode sources.")
-                .build();
+            .longOpt("no-src")
+            .desc("Do not decode sources.")
+            .build();
 
         Option onlyMainClassesOption = Option.builder()
-                .longOpt("only-main-classes")
-                .desc("Only disassemble the main dex classes (classes[0-9]*.dex) in the root.")
-                .build();
+            .longOpt("only-main-classes")
+            .desc("Only disassemble the main dex classes (classes[0-9]*.dex) in the root.")
+            .build();
 
         Option noResOption = Option.builder("r")
-                .longOpt("no-res")
-                .desc("Do not decode resources.")
-                .build();
+            .longOpt("no-res")
+            .desc("Do not decode resources.")
+            .build();
 
         Option forceManOption = Option.builder()
-                .longOpt("force-manifest")
-                .desc("Decode the APK's compiled manifest, even if decoding of resources is set to \"false\".")
-                .build();
+            .longOpt("force-manifest")
+            .desc("Decode the APK's compiled manifest, even if decoding of resources is set to \"false\".")
+            .build();
 
         Option noAssetOption = Option.builder()
-                .longOpt("no-assets")
-                .desc("Do not decode assets.")
-                .build();
+            .longOpt("no-assets")
+            .desc("Do not decode assets.")
+            .build();
 
         Option debugDecOption = Option.builder("d")
-                .longOpt("debug")
-                .desc("REMOVED (DOES NOT WORK): Decode in debug mode.")
-                .build();
+            .longOpt("debug")
+            .desc("REMOVED (DOES NOT WORK): Decode in debug mode.")
+            .build();
 
         Option analysisOption = Option.builder("m")
-                .longOpt("match-original")
-                .desc("Keeps files to closest to original as possible. Prevents rebuild.")
-                .build();
+            .longOpt("match-original")
+            .desc("Keeps files to closest to original as possible. Prevents rebuild.")
+            .build();
 
         Option apiLevelOption = Option.builder("api")
-                .longOpt("api-level")
-                .desc("The numeric api-level of the file to generate, e.g. 14 for ICS.")
-                .hasArg(true)
-                .argName("API")
-                .build();
+            .longOpt("api-level")
+            .desc("The numeric api-level of the file to generate, e.g. 14 for ICS.")
+            .hasArg(true)
+            .argName("API")
+            .build();
 
         Option debugBuiOption = Option.builder("d")
-                .longOpt("debug")
-                .desc("Sets android:debuggable to \"true\" in the APK's compiled manifest")
-                .build();
+            .longOpt("debug")
+            .desc("Sets android:debuggable to \"true\" in the APK's compiled manifest")
+            .build();
 
         Option netSecConfOption = Option.builder("n")
             .longOpt("net-sec-conf")
@@ -380,99 +420,99 @@ public class Main {
             .build();
 
         Option noDbgOption = Option.builder("b")
-                .longOpt("no-debug-info")
-                .desc("don't write out debug info (.local, .param, .line, etc.)")
-                .build();
+            .longOpt("no-debug-info")
+            .desc("don't write out debug info (.local, .param, .line, etc.)")
+            .build();
 
         Option forceDecOption = Option.builder("f")
-                .longOpt("force")
-                .desc("Force delete destination directory.")
-                .build();
+            .longOpt("force")
+            .desc("Force delete destination directory.")
+            .build();
 
         Option frameTagOption = Option.builder("t")
-                .longOpt("frame-tag")
-                .desc("Uses framework files tagged by <tag>.")
-                .hasArg(true)
-                .argName("tag")
-                .build();
+            .longOpt("frame-tag")
+            .desc("Uses framework files tagged by <tag>.")
+            .hasArg(true)
+            .argName("tag")
+            .build();
 
         Option frameDirOption = Option.builder("p")
-                .longOpt("frame-path")
-                .desc("Uses framework files located in <dir>.")
-                .hasArg(true)
-                .argName("dir")
-                .build();
+            .longOpt("frame-path")
+            .desc("Uses framework files located in <dir>.")
+            .hasArg(true)
+            .argName("dir")
+            .build();
 
         Option frameIfDirOption = Option.builder("p")
-                .longOpt("frame-path")
-                .desc("Stores framework files into <dir>.")
-                .hasArg(true)
-                .argName("dir")
-                .build();
+            .longOpt("frame-path")
+            .desc("Stores framework files into <dir>.")
+            .hasArg(true)
+            .argName("dir")
+            .build();
 
         Option keepResOption = Option.builder("k")
-                .longOpt("keep-broken-res")
-                .desc("Use if there was an error and some resources were dropped, e.g.\n"
-                        + "            \"Invalid config flags detected. Dropping resources\", but you\n"
-                        + "            want to decode them anyway, even with errors. You will have to\n"
-                        + "            fix them manually before building.")
-                .build();
+            .longOpt("keep-broken-res")
+            .desc("Use if there was an error and some resources were dropped, e.g.\n"
+                + "            \"Invalid config flags detected. Dropping resources\", but you\n"
+                + "            want to decode them anyway, even with errors. You will have to\n"
+                + "            fix them manually before building.")
+            .build();
 
         Option forceBuiOption = Option.builder("f")
-                .longOpt("force-all")
-                .desc("Skip changes detection and build all files.")
-                .build();
+            .longOpt("force-all")
+            .desc("Skip changes detection and build all files.")
+            .build();
 
         Option aaptOption = Option.builder("a")
-                .longOpt("aapt")
-                .hasArg(true)
-                .argName("loc")
-                .desc("Loads aapt from specified location.")
-                .build();
+            .longOpt("aapt")
+            .hasArg(true)
+            .argName("loc")
+            .desc("Loads aapt from specified location.")
+            .build();
 
         Option aapt2Option = Option.builder()
-                .longOpt("use-aapt2")
-                .desc("Upgrades apktool to use experimental aapt2 binary.")
-                .build();
+            .longOpt("use-aapt2")
+            .desc("Upgrades apktool to use experimental aapt2 binary.")
+            .build();
 
         Option originalOption = Option.builder("c")
-                .longOpt("copy-original")
-                .desc("Copies original AndroidManifest.xml and META-INF. See project page for more info.")
-                .build();
+            .longOpt("copy-original")
+            .desc("Copies original AndroidManifest.xml and META-INF. See project page for more info.")
+            .build();
 
         Option noCrunchOption = Option.builder("nc")
-                .longOpt("no-crunch")
-                .desc("Disable crunching of resource files during the build step.")
-                .build();
+            .longOpt("no-crunch")
+            .desc("Disable crunching of resource files during the build step.")
+            .build();
 
         Option tagOption = Option.builder("t")
-                .longOpt("tag")
-                .desc("Tag frameworks using <tag>.")
-                .hasArg(true)
-                .argName("tag")
-                .build();
+            .longOpt("tag")
+            .desc("Tag frameworks using <tag>.")
+            .hasArg(true)
+            .argName("tag")
+            .build();
 
         Option outputBuiOption = Option.builder("o")
-                .longOpt("output")
-                .desc("The name of apk that gets written. Default is dist/name.apk")
-                .hasArg(true)
-                .argName("dir")
-                .build();
+            .longOpt("output")
+            .desc("The name of apk that gets written. Default is dist/name.apk")
+            .hasArg(true)
+            .argName("dir")
+            .build();
 
         Option outputDecOption = Option.builder("o")
-                .longOpt("output")
-                .desc("The name of folder that gets written. Default is apk.out")
-                .hasArg(true)
-                .argName("dir")
-                .build();
+            .longOpt("output")
+            .desc("The name of folder that gets written. Default is apk.out")
+            .hasArg(true)
+            .argName("dir")
+            .build();
 
         Option quietOption = Option.builder("q")
-                .longOpt("quiet")
-                .build();
+            .longOpt("quiet")
+            .build();
 
         Option verboseOption = Option.builder("v")
-                .longOpt("verbose")
-                .build();
+            .longOpt("verbose")
+            .build();
 
         // check for advance mode
         if (isAdvanceMode()) {
@@ -567,14 +607,14 @@ public class Main {
 
         // print out license info prior to formatter.
         System.out.println(
-                "Apktool v" + Androlib.getVersion() + " - a tool for reengineering Android apk files\n" +
-                        "with smali v" + ApktoolProperties.get("smaliVersion") +
-                        " and baksmali v" + ApktoolProperties.get("baksmaliVersion") + "\n" +
-                        "Copyright 2010 Ryszard Wiśniewski <brut.alll@gmail.com>\n" +
-                        "Copyright 2010 Connor Tumbleson <connor.tumbleson@gmail.com>" );
+            "Apktool v" + Androlib.getVersion() + " - a tool for reengineering Android apk files\n" +
+                "with smali v" + ApktoolProperties.get("smaliVersion") +
+                " and baksmali v" + ApktoolProperties.get("baksmaliVersion") + "\n" +
+                "Copyright 2010 Ryszard Wiśniewski <brut.alll@gmail.com>\n" +
+                "Copyright 2010 Connor Tumbleson <connor.tumbleson@gmail.com>");
         if (isAdvanceMode()) {
             System.out.println("Apache License 2.0 (https://www.apache.org/licenses/LICENSE-2.0)\n");
-        }else {
+        } else {
             System.out.println();
         }
 
@@ -592,8 +632,8 @@ public class Main {
 
         // print out more information
         System.out.println(
-                "For additional info, see: https://apktool.org/ \n"
-                        + "For smali/baksmali info, see: https://github.com/google/smali");
+            "For additional info, see: https://apktool.org/ \n"
+                + "For smali/baksmali info, see: https://github.com/google/smali");
     }
 
     private static void setupLogging(final Verbosity verbosity) {
@@ -607,7 +647,7 @@ public class Main {
             return;
         }
 
-        Handler handler = new Handler(){
+        Handler handler = new Handler() {
             @Override
             public void publish(LogRecord record) {
                 if (getFormatter() == null) {
@@ -631,10 +671,14 @@ public class Main {
                     reportError(null, exception, ErrorManager.FORMAT_FAILURE);
                 }
             }
+
             @Override
-            public void close() throws SecurityException {}
+            public void close() throws SecurityException {
+            }
+
             @Override
-            public void flush(){}
+            public void flush() {
+            }
         };
 
         logger.addHandler(handler);
@@ -647,8 +691,8 @@ public class Main {
                 @Override
                 public String format(LogRecord record) {
                     return record.getLevel().toString().charAt(0) + ": "
-                            + record.getMessage()
-                            + System.getProperty("line.separator");
+                        + record.getMessage()
+                        + System.getProperty("line.separator");
                 }
             });
         }
@@ -664,28 +708,5 @@ public class Main {
 
     private enum Verbosity {
         NORMAL, VERBOSE, QUIET
-    }
-
-    private static boolean advanceMode = false;
-
-    private final static Options normalOptions;
-    private final static Options decodeOptions;
-    private final static Options buildOptions;
-    private final static Options frameOptions;
-    private final static Options allOptions;
-    private final static Options emptyOptions;
-    private final static Options emptyFrameworkOptions;
-    private final static Options listFrameworkOptions;
-
-    static {
-        //normal and advance usage output
-        normalOptions = new Options();
-        buildOptions = new Options();
-        decodeOptions = new Options();
-        frameOptions = new Options();
-        allOptions = new Options();
-        emptyOptions = new Options();
-        emptyFrameworkOptions = new Options();
-        listFrameworkOptions = new Options();
     }
 }

@@ -16,6 +16,16 @@
  */
 package brut.androlib.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
 import brut.androlib.BaseTest;
 import brut.androlib.TestUtils;
 import brut.common.BrutException;
@@ -26,15 +36,6 @@ import brut.directory.ExtFile;
 import brut.util.BrutIO;
 import brut.util.OS;
 import brut.util.OSDetection;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class UnknownDirectoryTraversalTest extends BaseTest {
 
@@ -77,7 +78,7 @@ public class UnknownDirectoryTraversalTest extends BaseTest {
     @Test(expected = TraversalUnknownFileException.class)
     public void invalidBackwardPathOnWindows() throws IOException, BrutException {
         String invalidPath;
-        if (! OSDetection.isWindows()) {
+        if (!OSDetection.isWindows()) {
             invalidPath = "../../app";
         } else {
             invalidPath = "..\\..\\app.exe";

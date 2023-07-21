@@ -16,11 +16,12 @@
  */
 package brut.androlib.util;
 
-import brut.common.BrutException;
-import brut.util.AaptManager;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import brut.common.BrutException;
+import brut.util.AaptManager;
 
 public class AaptVersionTest {
 

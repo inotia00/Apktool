@@ -19,6 +19,6 @@ package brut.androlib.err;
 import brut.androlib.AndrolibException;
 
 public class OutDirExistsException extends AndrolibException {
-	public OutDirExistsException() {
-	}
+    public OutDirExistsException() {
+    }
 }

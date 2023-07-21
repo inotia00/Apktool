@@ -16,14 +16,8 @@
  */
 package brut.androlib.aapt1;
 
-import brut.androlib.Androlib;
-import brut.androlib.ApkDecoder;
-import brut.androlib.BaseTest;
-import brut.androlib.TestUtils;
-import brut.androlib.meta.MetaInfo;
-import brut.directory.ExtFile;
-import brut.common.BrutException;
-import brut.util.OS;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,7 +25,14 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
+import brut.androlib.Androlib;
+import brut.androlib.ApkDecoder;
+import brut.androlib.BaseTest;
+import brut.androlib.TestUtils;
+import brut.androlib.meta.MetaInfo;
+import brut.common.BrutException;
+import brut.directory.ExtFile;
+import brut.util.OS;
 
 public class ReferenceVersionCodeTest extends BaseTest {
 

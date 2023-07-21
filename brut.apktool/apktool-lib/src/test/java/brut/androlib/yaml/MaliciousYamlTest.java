@@ -16,6 +16,12 @@
  */
 package brut.androlib.yaml;
 
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.yaml.snakeyaml.constructor.ConstructorException;
+
+import java.io.File;
+
 import brut.androlib.Androlib;
 import brut.androlib.BaseTest;
 import brut.androlib.TestUtils;
@@ -23,11 +29,6 @@ import brut.androlib.options.BuildOptions;
 import brut.common.BrutException;
 import brut.directory.ExtFile;
 import brut.util.OS;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.yaml.snakeyaml.constructor.ConstructorException;
-
-import java.io.File;
 
 public class MaliciousYamlTest extends BaseTest {
 

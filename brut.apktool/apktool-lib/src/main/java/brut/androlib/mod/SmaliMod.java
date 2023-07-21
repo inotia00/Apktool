@@ -16,17 +16,22 @@
  */
 package brut.androlib.mod;
 
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
-import org.antlr.runtime.tree.CommonTree;
-import org.antlr.runtime.tree.CommonTreeNodeStream;
 import com.android.tools.smali.dexlib2.writer.builder.DexBuilder;
 import com.android.tools.smali.smali.smaliFlexLexer;
 import com.android.tools.smali.smali.smaliParser;
 import com.android.tools.smali.smali.smaliTreeWalker;
 
-import java.io.*;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class SmaliMod {
@@ -46,7 +51,7 @@ public class SmaliMod {
         if (printTokens) {
             tokens.getTokens();
 
-            for (int i=0; i<tokens.size(); i++) {
+            for (int i = 0; i < tokens.size(); i++) {
                 Token token = tokens.get(i);
                 if (token.getChannel() == smaliParser.HIDDEN) {
                     continue;

@@ -16,14 +16,11 @@
  */
 package brut.androlib.src;
 
-import brut.androlib.AndrolibException;
-import brut.androlib.mod.SmaliMod;
-import brut.directory.DirectoryException;
-import brut.directory.ExtFile;
-import org.antlr.runtime.RecognitionException;
 import com.android.tools.smali.dexlib2.Opcodes;
 import com.android.tools.smali.dexlib2.writer.builder.DexBuilder;
 import com.android.tools.smali.dexlib2.writer.io.FileDataStore;
+
+import org.antlr.runtime.RecognitionException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,16 +28,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
+import brut.androlib.AndrolibException;
+import brut.androlib.mod.SmaliMod;
+import brut.directory.DirectoryException;
+import brut.directory.ExtFile;
+
 public class SmaliBuilder {
 
-    public static void build(ExtFile smaliDir, File dexFile, int apiLevel) throws AndrolibException {
-        new SmaliBuilder(smaliDir, dexFile, apiLevel).build();
-    }
+    private final static Logger LOGGER = Logger.getLogger(SmaliBuilder.class.getName());
+    private final ExtFile mSmaliDir;
+    private final File mDexFile;
+    private final int mApiLevel;
 
     private SmaliBuilder(ExtFile smaliDir, File dexFile, int apiLevel) {
         mSmaliDir = smaliDir;
         mDexFile = dexFile;
         mApiLevel = apiLevel;
+    }
+
+    public static void build(ExtFile smaliDir, File dexFile, int apiLevel) throws AndrolibException {
+        new SmaliBuilder(smaliDir, dexFile, apiLevel).build();
     }
 
     private void build() throws AndrolibException {
@@ -55,14 +62,14 @@ public class SmaliBuilder {
             for (String fileName : mSmaliDir.getDirectory().getFiles(true)) {
                 buildFile(fileName, dexBuilder);
             }
-            dexBuilder.writeTo(new FileDataStore( new File(mDexFile.getAbsolutePath())));
+            dexBuilder.writeTo(new FileDataStore(new File(mDexFile.getAbsolutePath())));
         } catch (IOException | DirectoryException ex) {
             throw new AndrolibException(ex);
         }
     }
 
     private void buildFile(String fileName, DexBuilder dexBuilder)
-            throws AndrolibException, IOException {
+        throws AndrolibException, IOException {
         File inFile = new File(mSmaliDir, fileName);
         InputStream inStream = new FileInputStream(inFile);
 
@@ -79,10 +86,4 @@ public class SmaliBuilder {
         }
         inStream.close();
     }
-
-    private final ExtFile mSmaliDir;
-    private final File mDexFile;
-    private final int mApiLevel;
-
-    private final static Logger LOGGER = Logger.getLogger(SmaliBuilder.class.getName());
 }

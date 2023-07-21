@@ -16,23 +16,32 @@
  */
 package brut.androlib.decode;
 
+import static org.junit.Assert.assertEquals;
+
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+
 import brut.androlib.BaseTest;
 import brut.androlib.TestUtils;
 import brut.androlib.res.decoder.Res9patchStreamDecoder;
 import brut.common.BrutException;
 import brut.directory.ExtFile;
 import brut.util.OS;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
-
-import static org.junit.Assert.*;
 
 public class MissingDiv9PatchTest extends BaseTest {
+
+    private static final int NP_COLOR = 0xff000000;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -68,6 +77,4 @@ public class MissingDiv9PatchTest extends BaseTest {
         File file = new File(sTmpDir, "pip_dismiss_scrim.9.png");
         return new FileInputStream(file.toPath().toString());
     }
-
-    private static final int NP_COLOR = 0xff000000;
 }

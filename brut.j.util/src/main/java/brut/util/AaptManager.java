@@ -16,10 +16,11 @@
  */
 package brut.util;
 
-import brut.common.BrutException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import brut.common.BrutException;
 
 public class AaptManager {
 
@@ -115,7 +116,8 @@ public class AaptManager {
         if (!aapt.canExecute()) {
             try {
                 aapt.setExecutable(true);
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
     }
 

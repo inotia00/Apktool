@@ -16,33 +16,39 @@
  */
 package brut.androlib.src;
 
-import brut.androlib.AndrolibException;
 import com.android.tools.smali.baksmali.Baksmali;
 import com.android.tools.smali.baksmali.BaksmaliOptions;
 import com.android.tools.smali.dexlib2.DexFileFactory;
 import com.android.tools.smali.dexlib2.Opcodes;
+import com.android.tools.smali.dexlib2.analysis.InlineMethodResolver;
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedDexFile;
 import com.android.tools.smali.dexlib2.dexbacked.DexBackedOdexFile;
-import com.android.tools.smali.dexlib2.analysis.InlineMethodResolver;
 import com.android.tools.smali.dexlib2.iface.DexFile;
 import com.android.tools.smali.dexlib2.iface.MultiDexContainer;
 
 import java.io.File;
 import java.io.IOException;
 
+import brut.androlib.AndrolibException;
+
 public class SmaliDecoder {
 
-    public static DexFile decode(File apkFile, File outDir, String dexName, boolean bakDeb, int apiLevel)
-            throws AndrolibException {
-        return new SmaliDecoder(apkFile, outDir, dexName, bakDeb, apiLevel).decode();
-    }
-
+    private final File mApkFile;
+    private final File mOutDir;
+    private final String mDexFile;
+    private final boolean mBakDeb;
+    private final int mApiLevel;
     private SmaliDecoder(File apkFile, File outDir, String dexName, boolean bakDeb, int apiLevel) {
         mApkFile = apkFile;
         mOutDir = outDir;
         mDexFile = dexName;
         mBakDeb = bakDeb;
         mApiLevel = apiLevel;
+    }
+
+    public static DexFile decode(File apkFile, File outDir, String dexName, boolean bakDeb, int apiLevel)
+        throws AndrolibException {
+        return new SmaliDecoder(apkFile, outDir, dexName, bakDeb, apiLevel).decode();
     }
 
     private DexFile decode() throws AndrolibException {
@@ -69,7 +75,7 @@ public class SmaliDecoder {
 
             // create the container
             MultiDexContainer<? extends DexBackedDexFile> container =
-                    DexFileFactory.loadDexContainer(mApkFile, mApiLevel > 0 ? Opcodes.forApi(mApiLevel) : null);
+                DexFileFactory.loadDexContainer(mApkFile, mApiLevel > 0 ? Opcodes.forApi(mApiLevel) : null);
             MultiDexContainer.DexEntry<? extends DexBackedDexFile> dexEntry;
             DexBackedDexFile dexFile;
 
@@ -94,7 +100,7 @@ public class SmaliDecoder {
 
             if (dexFile instanceof DexBackedOdexFile) {
                 options.inlineResolver =
-                        InlineMethodResolver.createInlineMethodResolver(((DexBackedOdexFile)dexFile).getOdexVersion());
+                    InlineMethodResolver.createInlineMethodResolver(((DexBackedOdexFile) dexFile).getOdexVersion());
             }
 
             Baksmali.disassembleDexFile(dexFile, mOutDir, jobs, options);
@@ -104,10 +110,4 @@ public class SmaliDecoder {
             throw new AndrolibException(ex);
         }
     }
-
-    private final File mApkFile;
-    private final File mOutDir;
-    private final String mDexFile;
-    private final boolean mBakDeb;
-    private final int mApiLevel;
 }

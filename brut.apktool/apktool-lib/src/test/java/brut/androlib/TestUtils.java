@@ -16,6 +16,24 @@
  */
 package brut.androlib;
 
+import org.custommonkey.xmlunit.ElementQualifier;
+import org.w3c.dom.Element;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.Map;
+
 import brut.androlib.options.BuildOptions;
 import brut.androlib.res.AndrolibResources;
 import brut.common.BrutException;
@@ -23,23 +41,11 @@ import brut.directory.DirUtil;
 import brut.directory.Directory;
 import brut.directory.FileDirectory;
 import brut.util.OS;
-import org.custommonkey.xmlunit.ElementQualifier;
-import org.w3c.dom.Element;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import java.io.*;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 
 public abstract class TestUtils {
 
     public static Map<String, String> parseStringsXml(File file)
-            throws BrutException {
+        throws BrutException {
         try {
             XmlPullParser xpp = XmlPullParserFactory.newInstance().newPullParser();
             xpp.setInput(new FileReader(file));
@@ -142,6 +148,10 @@ public abstract class TestUtils {
         return androlibResources.getFrameworkDir();
     }
 
+    public static String replaceNewlines(String value) {
+        return value.replace("\n", "").replace("\r", "");
+    }
+
     public static class ResValueElementQualifier implements ElementQualifier {
 
         @Override
@@ -158,9 +168,5 @@ public abstract class TestUtils {
 
             return controlType.equals(testType) && control.getAttribute("name").equals(test.getAttribute("name"));
         }
-    }
-
-    public static String replaceNewlines(String value) {
-        return value.replace("\n", "").replace("\r", "");
     }
 }

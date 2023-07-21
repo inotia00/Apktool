@@ -16,14 +16,15 @@
  */
 package brut.androlib.res.data;
 
-import brut.androlib.AndrolibException;
-import brut.androlib.err.UndefinedResObjectException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+
+import brut.androlib.AndrolibException;
+import brut.androlib.err.UndefinedResObjectException;
 
 public class ResResSpec {
     private final ResID mId;
@@ -80,7 +81,7 @@ public class ResResSpec {
 
     public String getFullName(boolean excludePackage, boolean excludeType) {
         return (excludePackage ? "" : getPackage().getName() + ":")
-                + (excludeType ? "" : getType().getName() + "/") + getName();
+            + (excludeType ? "" : getType().getName() + "/") + getName();
     }
 
     public ResID getId() {

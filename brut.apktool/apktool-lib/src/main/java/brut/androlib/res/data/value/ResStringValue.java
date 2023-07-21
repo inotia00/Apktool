@@ -16,15 +16,18 @@
  */
 package brut.androlib.res.data.value;
 
-import brut.androlib.AndrolibException;
-import brut.androlib.res.data.ResResource;
-import brut.androlib.res.xml.ResXmlEncoders;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+import brut.androlib.AndrolibException;
+import brut.androlib.res.data.ResResource;
+import brut.androlib.res.xml.ResXmlEncoders;
+
 public class ResStringValue extends ResScalarValue {
+
+    private static final Pattern allDigits = Pattern.compile("\\d{9,}");
 
     public ResStringValue(String value, int rawValue) {
         this(value, rawValue, "string");
@@ -67,6 +70,4 @@ public class ResStringValue extends ResScalarValue {
         }
         return allDigits.matcher(val).matches() ? "\\ " + val : val;
     }
-
-    private static final Pattern allDigits = Pattern.compile("\\d{9,}");
 }

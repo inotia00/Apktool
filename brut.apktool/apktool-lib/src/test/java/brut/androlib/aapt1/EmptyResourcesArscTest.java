@@ -16,13 +16,8 @@
  */
 package brut.androlib.aapt1;
 
-import brut.androlib.Androlib;
-import brut.androlib.ApkDecoder;
-import brut.androlib.options.BuildOptions;
-import brut.androlib.TestUtils;
-import brut.directory.ExtFile;
-import brut.common.BrutException;
-import brut.util.OS;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,9 +25,20 @@ import org.junit.Test;
 import java.io.File;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertTrue;
+import brut.androlib.Androlib;
+import brut.androlib.ApkDecoder;
+import brut.androlib.TestUtils;
+import brut.androlib.options.BuildOptions;
+import brut.common.BrutException;
+import brut.directory.ExtFile;
+import brut.util.OS;
 
 public class EmptyResourcesArscTest {
+    private final static Logger LOGGER = Logger.getLogger(EmptyResourcesArscTest.class.getName());
+    private static ExtFile sTmpDir;
+    private static ExtFile sTestOrigDir;
+    private static ExtFile sTestNewDir;
+
     @BeforeClass
     public static void beforeClass() throws Exception {
         TestUtils.cleanFrameworkFile();
@@ -64,10 +70,4 @@ public class EmptyResourcesArscTest {
         assertTrue(sTestNewDir.isDirectory());
         assertTrue(sTestOrigDir.isDirectory());
     }
-
-    private static ExtFile sTmpDir;
-    private static ExtFile sTestOrigDir;
-    private static ExtFile sTestNewDir;
-
-    private final static Logger LOGGER = Logger.getLogger(EmptyResourcesArscTest.class.getName());
 }

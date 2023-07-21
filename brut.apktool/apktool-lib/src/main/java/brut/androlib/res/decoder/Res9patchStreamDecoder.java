@@ -18,15 +18,9 @@ package brut.androlib.res.decoder;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import brut.androlib.AndrolibException;
-import brut.androlib.err.CantFind9PatchChunkException;
-import brut.util.ExtDataInput;
-import brut.util.OSDetection;
+
 import org.apache.commons.io.IOUtils;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
@@ -36,7 +30,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.imageio.ImageIO;
+
+import brut.androlib.AndrolibException;
+import brut.androlib.err.CantFind9PatchChunkException;
+import brut.util.ExtDataInput;
+import brut.util.OSDetection;
+
 public class Res9patchStreamDecoder implements ResStreamDecoder {
+    private static final int NP_CHUNK_TYPE = 0x6e705463; // npTc
+    private static final int OI_CHUNK_TYPE = 0x6e704c62; // npLb
+    private static final int NP_COLOR = 0xff000000;
+    private static final int OI_COLOR = 0xffff0000;
     private static OSDecoder decoder;
 
     {
@@ -116,10 +121,10 @@ public class Res9patchStreamDecoder implements ResStreamDecoder {
         }
     }
 
-    private static final int NP_CHUNK_TYPE = 0x6e705463; // npTc
-    private static final int OI_CHUNK_TYPE = 0x6e704c62; // npLb
-    private static final int NP_COLOR = 0xff000000;
-    private static final int OI_COLOR = 0xffff0000;
+    // OS implementations
+    private interface OSDecoder {
+        void decode(byte[] data, OutputStream out) throws IOException, AndrolibException;
+    }
 
     private static class NinePatch {
         public final int padLeft, padRight, padTop, padBottom;
@@ -172,12 +177,6 @@ public class Res9patchStreamDecoder implements ResStreamDecoder {
             return new OpticalInset(layoutBoundsLeft, layoutBoundsTop,
                 layoutBoundsRight, layoutBoundsBottom);
         }
-    }
-
-
-    // OS implementations
-    private interface OSDecoder {
-        void decode(byte[] data, OutputStream out) throws IOException, AndrolibException;
     }
 
     private class OtherImpl implements OSDecoder {

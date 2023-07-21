@@ -28,7 +28,7 @@ public class OSDetection {
         try {
             Class.forName("android.app.Activity");
             tmp = true;
-        } catch(ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             tmp = false;
         }
         ANDROID = tmp;

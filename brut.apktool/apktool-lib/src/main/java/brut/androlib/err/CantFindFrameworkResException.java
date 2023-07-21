@@ -19,18 +19,18 @@ package brut.androlib.err;
 import brut.androlib.AndrolibException;
 
 public class CantFindFrameworkResException extends AndrolibException {
-	public CantFindFrameworkResException(int id) {
-		mPkgId = id;
-	}
+    private final int mPkgId;
 
-	public int getPkgId() {
-		return mPkgId;
-	}
+    public CantFindFrameworkResException(int id) {
+        mPkgId = id;
+    }
 
-	@Override
-	public String getMessage() {
-		return String.format("Can't find framework resources for package of id: %d", this.getPkgId());
-	}
+    public int getPkgId() {
+        return mPkgId;
+    }
 
-	private final int mPkgId;
+    @Override
+    public String getMessage() {
+        return String.format("Can't find framework resources for package of id: %d", this.getPkgId());
+    }
 }

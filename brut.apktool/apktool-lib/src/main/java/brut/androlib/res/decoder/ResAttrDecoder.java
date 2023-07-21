@@ -25,16 +25,18 @@ import brut.androlib.res.data.value.ResAttr;
 import brut.androlib.res.data.value.ResScalarValue;
 
 public class ResAttrDecoder {
+    private ResPackage mCurrentPackage;
+
     public String decode(int type, int value, String rawValue, int attrResId)
-            throws AndrolibException {
+        throws AndrolibException {
         ResScalarValue resValue = mCurrentPackage.getValueFactory().factory(
-                type, value, rawValue);
+            type, value, rawValue);
 
         String decoded = null;
         if (attrResId > 0) {
             try {
                 ResAttr attr = (ResAttr) getCurrentPackage().getResTable()
-                        .getResSpec(attrResId).getDefaultResource().getValue();
+                    .getResSpec(attrResId).getDefaultResource().getValue();
 
                 decoded = attr.convertToResXmlFormat(resValue);
             } catch (UndefinedResObjectException | ClassCastException ex) {
@@ -83,6 +85,4 @@ public class ResAttrDecoder {
     public void setCurrentPackage(ResPackage currentPackage) {
         mCurrentPackage = currentPackage;
     }
-
-    private ResPackage mCurrentPackage;
 }

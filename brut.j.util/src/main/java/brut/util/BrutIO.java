@@ -16,21 +16,26 @@
  */
 package brut.util;
 
-import brut.common.BrutException;
-import brut.common.InvalidUnknownFileException;
-import brut.common.RootUnknownFileException;
-import brut.common.TraversalUnknownFileException;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import brut.common.BrutException;
+import brut.common.InvalidUnknownFileException;
+import brut.common.RootUnknownFileException;
+import brut.common.TraversalUnknownFileException;
+
 public class BrutIO {
     public static void copyAndClose(InputStream in, OutputStream out)
-            throws IOException {
+        throws IOException {
         try {
             IOUtils.copy(in, out);
         } finally {
@@ -68,7 +73,7 @@ public class BrutIO {
         CRC32 crc = new CRC32();
         int bytesRead;
         byte[] buffer = new byte[8192];
-        while((bytesRead = input.read(buffer)) != -1) {
+        while ((bytesRead = input.read(buffer)) != -1) {
             crc.update(buffer, 0, bytesRead);
         }
         return crc;
@@ -106,7 +111,7 @@ public class BrutIO {
 
     public static void copy(File inputFile, ZipOutputStream outputFile) throws IOException {
         try (
-                FileInputStream fis = new FileInputStream(inputFile)
+            FileInputStream fis = new FileInputStream(inputFile)
         ) {
             IOUtils.copy(fis, outputFile);
         }
@@ -114,7 +119,7 @@ public class BrutIO {
 
     public static void copy(ZipFile inputFile, ZipOutputStream outputFile, ZipEntry entry) throws IOException {
         try (
-                InputStream is = inputFile.getInputStream(entry)
+            InputStream is = inputFile.getInputStream(entry)
         ) {
             IOUtils.copy(is, outputFile);
         }

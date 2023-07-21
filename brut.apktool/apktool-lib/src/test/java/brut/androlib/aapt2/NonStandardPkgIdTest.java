@@ -16,21 +16,29 @@
  */
 package brut.androlib.aapt2;
 
-import brut.androlib.*;
-import brut.androlib.options.BuildOptions;
-import brut.androlib.res.data.ResTable;
-import brut.common.BrutException;
-import brut.directory.ExtFile;
-import brut.util.OS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import brut.androlib.Androlib;
+import brut.androlib.AndrolibException;
+import brut.androlib.ApkDecoder;
+import brut.androlib.BaseTest;
+import brut.androlib.TestUtils;
+import brut.androlib.options.BuildOptions;
+import brut.androlib.res.data.ResTable;
+import brut.common.BrutException;
+import brut.directory.ExtFile;
+import brut.util.OS;
 
 public class NonStandardPkgIdTest extends BaseTest {
+
+    private static ResTable mResTable;
 
     @BeforeClass
     public static void beforeClass() throws Exception {
@@ -87,6 +95,4 @@ public class NonStandardPkgIdTest extends BaseTest {
         assertEquals(0x80, mResTable.getResSpec(0x80020001).getPackage().getId());
         assertEquals(0x80, mResTable.getResSpec(0x80030000).getPackage().getId());
     }
-
-    private static ResTable mResTable;
 }

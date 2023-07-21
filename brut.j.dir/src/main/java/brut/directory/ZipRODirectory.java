@@ -43,7 +43,7 @@ public class ZipRODirectory extends AbstractDirectory {
     }
 
     public ZipRODirectory(String zipFileName, String path)
-            throws DirectoryException {
+        throws DirectoryException {
         this(new File(zipFileName), path);
     }
 
@@ -70,7 +70,7 @@ public class ZipRODirectory extends AbstractDirectory {
 
     @Override
     protected InputStream getFileInputLocal(String name)
-            throws DirectoryException {
+        throws DirectoryException {
         try {
             return getZipFile().getInputStream(new ZipEntry(getPath() + name));
         } catch (IOException e) {
@@ -100,27 +100,27 @@ public class ZipRODirectory extends AbstractDirectory {
 
     @Override
     public long getSize(String fileName)
-            throws DirectoryException {
+        throws DirectoryException {
         ZipEntry entry = getZipFileEntry(fileName);
         return entry.getSize();
     }
 
     @Override
     public long getCompressedSize(String fileName)
-            throws DirectoryException {
+        throws DirectoryException {
         ZipEntry entry = getZipFileEntry(fileName);
         return entry.getCompressedSize();
     }
 
     @Override
     public int getCompressionLevel(String fileName)
-            throws DirectoryException {
+        throws DirectoryException {
         ZipEntry entry = getZipFileEntry(fileName);
         return entry.getMethod();
     }
 
     private ZipEntry getZipFileEntry(String fileName)
-            throws DirectoryException {
+        throws DirectoryException {
         ZipEntry entry = mZipFile.getEntry(fileName);
         if (entry == null) {
             throw new PathNotExist("Entry not found: " + fileName);
@@ -138,7 +138,7 @@ public class ZipRODirectory extends AbstractDirectory {
             ZipEntry entry = entries.nextElement();
             String name = entry.getName();
 
-            if (name.equals(getPath()) || ! name.startsWith(getPath()) || name.contains(".." + separator)) {
+            if (name.equals(getPath()) || !name.startsWith(getPath()) || name.contains(".." + separator)) {
                 continue;
             }
 
@@ -146,7 +146,7 @@ public class ZipRODirectory extends AbstractDirectory {
 
             int pos = subname.indexOf(separator);
             if (pos == -1) {
-                if (! entry.isDirectory()) {
+                if (!entry.isDirectory()) {
                     mFiles.add(subname);
                     continue;
                 }
@@ -154,7 +154,7 @@ public class ZipRODirectory extends AbstractDirectory {
                 subname = subname.substring(0, pos);
             }
 
-            if (! mDirs.containsKey(subname)) {
+            if (!mDirs.containsKey(subname)) {
                 AbstractDirectory dir = new ZipRODirectory(getZipFile(), getPath() + subname + separator);
                 mDirs.put(subname, dir);
             }

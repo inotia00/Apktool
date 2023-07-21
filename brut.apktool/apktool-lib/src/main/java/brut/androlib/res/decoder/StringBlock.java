@@ -16,26 +16,51 @@
  */
 package brut.androlib.res.decoder;
 
-import brut.androlib.res.xml.ResXmlEncoders;
-import brut.util.ExtDataInput;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.*;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
+import brut.androlib.res.xml.ResXmlEncoders;
+import brut.util.ExtDataInput;
+
 public class StringBlock {
+
+    private static final Logger LOGGER = Logger.getLogger(StringBlock.class.getName());
+    // ResChunk_header = header.type (0x0001) + header.headerSize (0x001C)
+    private static final int CHUNK_STRINGPOOL_TYPE = 0x001C0001;
+    private static final int CHUNK_NULL_TYPE = 0x00000000;
+    private static final int UTF8_FLAG = 0x00000100;
+    private final CharsetDecoder UTF16LE_DECODER = StandardCharsets.UTF_16LE.newDecoder();
+    private final CharsetDecoder UTF8_DECODER = StandardCharsets.UTF_8.newDecoder();
+    private final CharsetDecoder CESU8_DECODER = Charset.forName("CESU8").newDecoder();
+    private int[] m_stringOffsets;
+    private byte[] m_strings;
+    private int[] m_styleOffsets;
+    private int[] m_styles;
+    private boolean m_isUTF8;
+    private StringBlock() {
+    }
+    @VisibleForTesting
+    StringBlock(byte[] strings, boolean isUTF8) {
+        m_strings = strings;
+        m_isUTF8 = isUTF8;
+    }
 
     /**
      * Reads whole (including chunk type) string block from stream. Stream must
      * be at the chunk type.
+     *
      * @param reader ExtDataInput
      * @return StringBlock
-     *
      * @throws IOException Parsing resources.arsc error
      */
     public static StringBlock read(ExtDataInput reader) throws IOException {
@@ -77,8 +102,48 @@ public class StringBlock {
         return block;
     }
 
+    private static int getShort(byte[] array, int offset) {
+        return (array[offset + 1] & 0xff) << 8 | array[offset] & 0xff;
+    }
+
+    private static int[] getUtf8(byte[] array, int offset) {
+        int val = array[offset];
+        int length;
+        // We skip the utf16 length of the string
+        if ((val & 0x80) != 0) {
+            offset += 2;
+        } else {
+            offset += 1;
+        }
+        // And we read only the utf-8 encoded length of the string
+        val = array[offset];
+        offset += 1;
+        if ((val & 0x80) != 0) {
+            int low = (array[offset] & 0xFF);
+            length = ((val & 0x7F) << 8) + low;
+            offset += 1;
+        } else {
+            length = val;
+        }
+        return new int[]{offset, length};
+    }
+
+    private static int[] getUtf16(byte[] array, int offset) {
+        int val = ((array[offset + 1] & 0xFF) << 8 | array[offset] & 0xFF);
+
+        if ((val & 0x8000) != 0) {
+            int high = (array[offset + 3] & 0xFF) << 8;
+            int low = (array[offset + 2] & 0xFF);
+            int len_value = ((val & 0x7FFF) << 16) + (high + low);
+            return new int[]{4, len_value * 2};
+
+        }
+        return new int[]{2, val * 2};
+    }
+
     /**
      * Returns raw string (without any styling information) at specified index.
+     *
      * @param index int
      * @return String
      */
@@ -161,22 +226,13 @@ public class StringBlock {
         return -1;
     }
 
-    private StringBlock() {
-    }
-
-    @VisibleForTesting
-    StringBlock(byte[] strings, boolean isUTF8) {
-        m_strings = strings;
-        m_isUTF8 = isUTF8;
-    }
-
     /**
      * Returns style information - array of int triplets, where in each triplet:
      * * first int is index of tag name ('b','i', etc.) * second int is tag
      * start index in string * third int is tag end index in string
      */
     private int[] getStyle(int index) {
-        if (m_styleOffsets == null || m_styles == null|| index >= m_styleOffsets.length) {
+        if (m_styleOffsets == null || m_styles == null || index >= m_styleOffsets.length) {
             return null;
         }
         int offset = m_styleOffsets[index] / 4;
@@ -195,7 +251,7 @@ public class StringBlock {
         }
         style = new int[count];
 
-        for (int i = offset, j = 0; i < m_styles.length;) {
+        for (int i = offset, j = 0; i < m_styles.length; ) {
             if (m_styles[i] == -1) {
                 break;
             }
@@ -226,59 +282,4 @@ public class StringBlock {
             return null;
         }
     }
-
-    private static int getShort(byte[] array, int offset) {
-        return (array[offset + 1] & 0xff) << 8 | array[offset] & 0xff;
-    }
-
-    private static int[] getUtf8(byte[] array, int offset) {
-        int val = array[offset];
-        int length;
-        // We skip the utf16 length of the string
-        if ((val & 0x80) != 0) {
-            offset += 2;
-        } else {
-            offset += 1;
-        }
-        // And we read only the utf-8 encoded length of the string
-        val = array[offset];
-        offset += 1;
-        if ((val & 0x80) != 0) {
-        	int low = (array[offset] & 0xFF);
-        	length = ((val & 0x7F) << 8) + low;
-            offset += 1;
-        } else {
-            length = val;
-        }
-        return new int[] { offset, length};
-    }
-
-    private static int[] getUtf16(byte[] array, int offset) {
-        int val = ((array[offset + 1] & 0xFF) << 8 | array[offset] & 0xFF);
-
-        if ((val & 0x8000) != 0) {
-            int high = (array[offset + 3] & 0xFF) << 8;
-            int low = (array[offset + 2] & 0xFF);
-            int len_value =  ((val & 0x7FFF) << 16) + (high + low);
-            return new int[] {4, len_value * 2};
-
-        }
-        return new int[] {2, val * 2};
-    }
-
-    private int[] m_stringOffsets;
-    private byte[] m_strings;
-    private int[] m_styleOffsets;
-    private int[] m_styles;
-    private boolean m_isUTF8;
-
-    private final CharsetDecoder UTF16LE_DECODER = StandardCharsets.UTF_16LE.newDecoder();
-    private final CharsetDecoder UTF8_DECODER = StandardCharsets.UTF_8.newDecoder();
-    private final CharsetDecoder CESU8_DECODER = Charset.forName("CESU8").newDecoder();
-    private static final Logger LOGGER = Logger.getLogger(StringBlock.class.getName());
-
-    // ResChunk_header = header.type (0x0001) + header.headerSize (0x001C)
-    private static final int CHUNK_STRINGPOOL_TYPE = 0x001C0001;
-    private static final int CHUNK_NULL_TYPE = 0x00000000;
-    private static final int UTF8_FLAG = 0x00000100;
 }
