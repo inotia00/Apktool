@@ -33,9 +33,9 @@ processResources {
 }
 
 dependencies {
-    api project(':brut.j.dir')
+    api depends.brut_j_dir
     api project(':brut.j.util')
-    api project(':brut.j.common')
+    api depends.brut_j_common
 
     def androidJar
     def root = System.getenv('ANDROID_SDK_ROOT')

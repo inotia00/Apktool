@@ -30,6 +30,8 @@ buildscript {
                 smali          : 'com.android.tools.smali:smali:3.0.3',
                 xmlpull        : 'xpp3:xpp3:1.1.4c',
                 xmlunit        : 'xmlunit:xmlunit:1.6',
+                brut_j_common  : 'org.apktool:brut.j.common:2.8.0',
+                brut_j_dir     : 'org.apktool:brut.j.dir:2.8.0',
         ]
     }
 
@@ -148,7 +150,7 @@ subprojects {
         }
     }
 
-    def mavenProjects = ['apktool-lib', 'apktool-cli', 'brut.j.common', 'brut.j.util', 'brut.j.dir']
+    def mavenProjects = ['apktool-lib', 'apktool-cli', 'brut.j.util']
 
     if (project.name in mavenProjects) {
         apply plugin: 'maven-publish'
